@@ -1,125 +1,208 @@
+<!--
+Responsive Tourist Guide - single-file HTML + CSS
+Created for: FABIAN
+Instructions:
+- This is a complete single-file webpage. Save as: guia_turistica_responsive.html
+- Open in a browser. To make social embeds work, replace the placeholder embed snippets with real embed codes from each platform or allow external scripts.
+- The page includes three categories: Gastronomía, Alojamiento, Sitios de interés. Use the filter buttons to show/hide cards.
+- The layout is responsive and uses CSS Grid and Flexbox. No external libraries needed.
+-->
+
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Social Wall @paipa — Perfiles + Tag</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>	Gu&iacute;a Tur&iacute;stica de Paipa y sus Alrededores</title>
+  <meta name="description" content="Guía turística regional con embeds de redes sociales — gastronomía, alojamiento y sitios de interés">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:system-ui,Arial;background:#f6f7f9;color:#222}
-    .container{max-width:1150px;margin:0 auto;padding:1rem}
-    header{background:#0b74a6;color:#fff;padding:1rem;border-radius:10px}
-    h1{font-size:1.3rem}
-    main{display:grid;grid-template-columns:1fr 330px;gap:1rem;margin-top:1rem}
-    @media(max-width:900px){main{grid-template-columns:1fr}}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem}
-    .card{background:#fff;padding:1rem;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.07)}
-    .card h3{margin-bottom:.5rem}
-    .embed-wrap{position:relative;padding-top:56%;border-radius:10px;overflow:hidden;background:#000}
-    .embed-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
-    aside .box{background:#fff;padding:1rem;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.07);margin-bottom:1rem}
-    footer{text-align:center;margin-top:1rem;color:#666}
+    :root{
+      --bg:#f6f7fb; --card:#fff; --accent:#0ea5a4; --muted:#6b7280; --radius:12px; --gap:18px;
+      --max-width:1100px;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; background:linear-gradient(180deg,#f8fafc, #f3f4f6); color:#0f172a}
+    .wrap{max-width:var(--max-width); margin:28px auto; padding:20px}
+
+    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    .logo{display:flex;align-items:center;gap:12px}
+    .logo .mark{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#7c3aed);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    h1{font-size:1.25rem;margin:0}
+    p.lead{margin:0;color:var(--muted)}
+
+    nav{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+    .btn{background:transparent;border:1px solid transparent;padding:8px 12px;border-radius:999px;cursor:pointer}
+    .btn.primary{background:var(--accent);color:white;border-color:transparent}
+    .btn.ghost{border:1px solid rgba(15,23,42,0.06)}
+
+    /* Filters */
+    .filters{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+
+    /* layout */
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap)}
+    .card{background:var(--card);padding:12px;border-radius:var(--radius);box-shadow:0 6px 20px rgba(16,24,40,0.06);display:flex;flex-direction:column;gap:10px}
+    .card h3{margin:0;font-size:1rem}
+    .meta{font-size:0.85rem;color:var(--muted)}
+    .embed{min-height:220px;background:#eef2f7;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+
+    /* responsive */
+    @media (max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:640px){
+      header{flex-direction:column;align-items:flex-start}
+      .grid{grid-template-columns:1fr}
+      .embed{min-height:180px}
+    }
+
+    /* small helpers */
+    .row{display:flex;gap:10px;align-items:center}
+    .pill{padding:6px 10px;border-radius:999px;background:#f1f5f9;font-size:0.85rem}
+
+    /* search */
+    .search{display:flex;gap:8px;align-items:center}
+    .search input{padding:8px 12px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);min-width:220px}
+
+    footer{margin-top:22px;color:var(--muted);font-size:0.9rem}
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="wrap">
     <header>
-      <h1>guia turistica de @paipa</h1>
-      <p> tag @paipa</p>
+      <div class="logo">
+        <div class="mark">GT</div>
+        <div>
+          <h1>Gu&iacute;a Tur&iacute;stica de Paipa y sus Alrededores</h1>
+          <p class="lead">Explora gastronomía, alojamiento y sitios de interés con posts y videos embebidos desde redes sociales.</p>
+        </div>
+      </div>
+      <div style="margin-left:auto" class="row">
+        <div class="search">
+          <input type="search" id="search" placeholder="Buscar lugar, restaurante..." aria-label="Buscar">
+          <button class="btn ghost" onclick="doSearch()">Buscar</button>
+        </div>
+      </div>
     </header>
 
+    <nav>
+      <div class="filters" role="toolbar" aria-label="Filtros de categorías">
+        <button class="btn primary" data-filter="all" onclick="filterCards('all')">Todas</button>
+        <button class="btn" data-filter="gastronomia" onclick="filterCards('gastronomia')">Gastronomía</button>
+        <button class="btn" data-filter="alojamiento" onclick="filterCards('alojamiento')">Alojamiento</button>
+        <button class="btn" data-filter="sitios" onclick="filterCards('sitios')">Sitios de interés</button>
+      </div>
+    </nav>
+
     <main>
-      <section>
-        <div class="grid">
-          <!-- X profile embed -->
-          <div class="card">
-            <h3>GASTRONOMIA</h3>
-            <div class="embed-wrap">
-              <iframe src="https://publish.twitter.com/?query=https://twitter.com/paipa&widget=Timeline" title="X @paipa"></iframe>
-            </div>
-          </div>
+      <section class="grid" id="cards">
 
-          <!-- X hashtag/tag embed -->
-          <div class="card">
-            <h3>X — Tag @paipa</h3>
-            <div class="embed-wrap">
-              <iframe src="https://publish.twitter.com/?query=%23paipa&type=timeline" title="X tag @paipa"></iframe>
-            </div>
+        <!-- Card 1: Gastronomía - YouTube video embed -->
+        <article class="card" data-category="gastronomia">
+          <h3>Restaurante La Esquina</h3>
+          <div class="meta">Gastronomía • Video recomendado</div>
+          <div class="embed">
+            <!-- Replace with real YouTube embed: example iframe -->
+            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video" frameborder="0" allowfullscreen style="min-height:220px"></iframe>
           </div>
+          <div class="row">
+            <span class="pill">#comida</span>
+            <span class="pill">#tradición</span>
+          </div>
+        </article>
 
-          <!-- Instagram profile embed placeholder -->
-          <div class="card">
-            <h3>Instagram — Perfil @paipa</h3>
-            <p>Instagram no permite feed completo sin widget externo. Aquí un espacio para tu widget:</p>
-            <div class="embed-wrap">
-              <iframe src="https://example.com/instagram-paipa-widget" title="Instagram @paipa"></iframe>
-            </div>
+        <!-- Card 2: Alojamiento - Instagram embed (placeholder) -->
+        <article class="card" data-category="alojamiento">
+          <h3>Hostal Mirador</h3>
+          <div class="meta">Alojamiento • Publicación de Instagram</div>
+          <div class="embed">
+            <!-- Instagram embed: replace URL with actual post embed code from Instagram -->
+            <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/CG0UU3eHk9Z/" data-instgrm-version="14" style="background:white;padding:16px;border-radius:8px;max-width:540px;min-width:200px">
+              <a href="https://www.instagram.com/p/CG0UU3eHk9Z/">Ver en Instagram</a>
+            </blockquote>
           </div>
+        </article>
 
-          <!-- Instagram tag embed -->
-          <div class="card">
-            <h3>Instagram — Tag #paipa</h3>
-            <div class="embed-wrap">
-              <iframe src="https://example.com/instagram-tag-paipa" title="Instagram tag"></iframe>
-            </div>
+        <!-- Card 3: Sitio de interés - Twitter embed -->
+        <article class="card" data-category="sitios">
+          <h3>Mirador del Valle</h3>
+          <div class="meta">Sitio de interés • Tweet</div>
+          <div class="embed">
+            <!-- Twitter embed placeholder -->
+            <blockquote class="twitter-tweet"><p lang="es">Hermosa vista desde el Mirador del Valle. #paisaje</p>&mdash; Usuario (@usuario) <a href="https://twitter.com/usuario/status/1234567890?ref_src=twsrc%5Etfw">Abr 1, 2024</a></blockquote>
           </div>
+        </article>
 
-          <!-- TikTok profile embed -->
-          <div class="card">
-            <h3>TikTok — Perfil @paipa</h3>
-            <div class="embed-wrap">
-              <iframe src="https://www.tiktok.com/embed/@paipa" title="TikTok @paipa"></iframe>
-            </div>
+        <!-- Card 4: Gastronomía - Facebook post embed -->
+        <article class="card" data-category="gastronomia">
+          <h3>Café Central</h3>
+          <div class="meta">Gastronomía • Facebook</div>
+          <div class="embed">
+            <!-- Facebook embed placeholder (replace with actual Facebook embed code) -->
+            <div style="padding:12px;text-align:center;">Post de Facebook - <a href="#">Ver publicación</a></div>
           </div>
+        </article>
 
-          <!-- TikTok tag -->
-          <div class="card">
-            <h3>TikTok — Tag @paipa</h3>
-            <div class="embed-wrap">
-              <iframe src="https://www.tiktok.com/search?q=%40paipa" title="TikTok tag"></iframe>
-            </div>
+        <!-- Card 5: Alojamiento - Video o reel -->
+        <article class="card" data-category="alojamiento">
+          <h3>Eco-Lodge El Bosque</h3>
+          <div class="meta">Alojamiento • Reel / Video</div>
+          <div class="embed">
+            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/3fumBcKC6RE" title="Video" frameborder="0" allowfullscreen style="min-height:180px"></iframe>
           </div>
+        </article>
 
-          <!-- Facebook page embed -->
-          <div class="card">
-            <h3>Facebook — Página @paipa</h3>
-            <div class="embed-wrap">
-              <iframe src="https://www.facebook.com/plugins/page.php?href=https://www.facebook.com/paipa&tabs=timeline" title="Facebook @paipa"></iframe>
-            </div>
+        <!-- Card 6: Sitios - Map / Gallery -->
+        <article class="card" data-category="sitios">
+          <h3>Parque Histórico</h3>
+          <div class="meta">Sitio de interés • Galería / mapa</div>
+          <div class="embed">
+            <!-- Example: embedded Google Maps iframe (replace with own place) -->
+            <iframe width="100%" height="100%" style="border:0;min-height:220px" loading="lazy" allowfullscreen src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.086..." ></iframe>
           </div>
+        </article>
 
-          <!-- YouTube channel -->
-          <div class="card">
-            <h3>YouTube — Canal @paipa</h3>
-            <div class="embed-wrap">
-              <iframe src="https://www.youtube.com/embed?listType=user_uploads&list=paipa" title="YouTube @paipa"></iframe>
-            </div>
-          </div>
-        </div>
       </section>
-
-      <aside>
-        <div class="box">
-          <h3>Enlaces directos @paipa</h3>
-          <ul>
-            <li><a href="https://twitter.com/paipa" target="_blank">X - @paipa</a></li>
-            <li><a href="https://www.instagram.com/paipa" target="_blank">Instagram - @paipa</a></li>
-            <li><a href="https://www.tiktok.com/@paipa" target="_blank">TikTok - @paipa</a></li>
-            <li><a href="https://www.facebook.com/paipa" target="_blank">Facebook - @paipa</a></li>
-            <li><a href="https://www.youtube.com/results?search_query=paipa" target="_blank">YouTube - @paipa</a></li>
-          </ul>
-        </div>
-
-        <div class="box">
-          <h3>Sobre los embeds</h3>
-          <p>Instagram y TikTok requieren widgets externos para muros completos. Si tienes uno (Taggbox, Elfsight, EmbedSocial), pégame el código y lo incrusto.</p>
-        </div>
-      </aside>
     </main>
 
     <footer>
-      © Página responsive con perfiles y tag @paipa
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>© Guía Turística Regional</div>
+        <div class="meta">Consejo: para que las publicaciones se muestren correctamente, agrega los scripts de cada red social: Twitter, Instagram, Facebook y/o YouTube.</div>
+      </div>
     </footer>
   </div>
+
+  <!-- Minimal JS for filtering and search -->
+  <script>
+    function filterCards(cat){
+      const cards = document.querySelectorAll('#cards .card');
+      document.querySelectorAll('.filters .btn').forEach(b=>b.classList.remove('primary'));
+      document.querySelectorAll('.filters .btn').forEach(b=>{ if(b.getAttribute('data-filter')===cat) b.classList.add('primary') });
+      cards.forEach(card=>{
+        const c = card.getAttribute('data-category');
+        if(cat==='all' || c===cat) card.style.display = '';
+        else card.style.display = 'none';
+      });
+    }
+    function doSearch(){
+      const q = document.getElementById('search').value.toLowerCase().trim();
+      const cards = document.querySelectorAll('#cards .card');
+      cards.forEach(card=>{
+        const text = (card.querySelector('h3').innerText + ' ' + card.querySelector('.meta').innerText).toLowerCase();
+        card.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+    // Optional: load external embed scripts dynamically for Twitter/Instagram/Facebook
+    (function loadEmbedScripts(){
+      // Twitter
+      if(!window.twttr){
+        const s = document.createElement('script'); s.src = 'https://platform.twitter.com/widgets.js'; s.async=true; document.body.appendChild(s);
+      }
+      // Instagram
+      if(!window.instgrm){
+        const s2 = document.createElement('script'); s2.src='https://www.instagram.com/embed.js'; s2.async=true; document.body.appendChild(s2);
+      }
+      // Facebook SDK - if you want to show FB embeds you must set up appId for advanced features (optional)
+      // const fb = document.createElement('script'); fb.src='https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v13.0'; fb.async=true; document.body.appendChild(fb);
+    })();
+  </script>
 </body>
 </html>
